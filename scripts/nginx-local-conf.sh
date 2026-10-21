@@ -13,6 +13,11 @@
 set -e
 
 REPO_ROOT="$(builtin cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd -P)"
+# Hermes agent terminal: MSYS->Windows path auto-conversion is disabled, so
+# native Windows tools (nginx) misresolve POSIX-style /c/... roots.
+if command -v cygpath >/dev/null 2>&1 && [[ "$REPO_ROOT" == /* ]]; then
+    REPO_ROOT="$(cygpath -w "$REPO_ROOT")"
+fi
 SOURCE_CONF="$REPO_ROOT/docker/nginx/nginx.local.conf"
 RENDERED_CONF="$REPO_ROOT/temp/nginx.local.conf"
 

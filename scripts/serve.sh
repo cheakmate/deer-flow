@@ -29,6 +29,12 @@
 set -e
 
 REPO_ROOT="$(builtin cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd -P)"
+# Hermes agent terminal: MSYS->Windows path auto-conversion is disabled, so
+# native Windows tools (python/uv) misresolve POSIX-style /c/... roots.
+# Convert the repo root to a native Windows path when cygpath is available.
+if command -v cygpath >/dev/null 2>&1 && [[ "$REPO_ROOT" == /* ]]; then
+    REPO_ROOT="$(cygpath -w "$REPO_ROOT")"
+fi
 cd "$REPO_ROOT"
 
 # ── Load .env ────────────────────────────────────────────────────────────────
