@@ -393,6 +393,7 @@ fi
 
 if ! { \
         [ -n "$DEER_FLOW_CONFIG_PATH" ] && [ -f "$DEER_FLOW_CONFIG_PATH" ] || \
+        [ -f "$DEER_FLOW_PROJECT_ROOT/config.yaml" ] || \
         [ -f backend/config.yaml ] || \
         [ -f config.yaml ]; \
     }; then
