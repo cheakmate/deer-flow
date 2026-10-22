@@ -6,13 +6,19 @@ description: Use when installing, configuring, or debugging DeerFlow 2.0 — loc
 # DeerFlow
 
 ## Ön Yüz Kuralları
-- Yerel geliştirme için `DEER_FLOW_AUTH_DISABLED=*** kullan — bu hem auth'ı hem CSRF'yi devre dışı bırakır.
+- Yerel geliştirme için `DEER_FLOW_AUTH_DISABLED=1` kullan — bu hem auth'ı hem CSRF'yi devre dışı bırakır.
 - NVIDIA NIM veya benzeri OpenAI-compatible sağlayıcılar için `base_url` ve `api_key` field'larını `config.yaml` içine yaz.
 - Test mesajlarını tarayıcı arayüzünden gönder (http://localhost:2026) — curl ile CSRF token'ı almak için ekstra adımlar gerekir.
 
+## Pitfall: NIM Non-Streaming İstekler Takılıyor
+NVIDIA NIM ücretsiz endpoint'lerinde `stream: false` ile giden istekler 180+ saniye asılı kalır ve
+timeout'a düşer. Her NIM çağrısında `stream: true` zorunludur. `request_timeout` düşük tutulursa
+sohbet "takıldı" gibi görünür — `request_timeout: 600.0` kullan.
+Ölçülen cold start: `z-ai/glm-5.3` ≈ 102 sn, `z-ai/glm-5.3-flash` ≈ 58 sn.
+
 ## Pitfall: CSRF Double-Submit Cookie Pattern
 **curl ile local'den login yapma** — DeerFlow CSRF double-submit cookie pattern kullanır. CSRF token cookie'si olmadan auth endpoint'leri 403 döner. Çözüm:
-1. `DEER_FLOW_AUTH_DISABLED=*** set et (`.env dosyasına ekle)
+1. `DEER_FLOW_AUTH_DISABLED=1` set et (`.env` dosyasına ekle)
 2. Servisi yeniden başlat: `make stop && make start`
 3. Test için tarayıcı kullan veya API key ile çalış
 
